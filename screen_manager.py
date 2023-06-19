@@ -102,36 +102,6 @@ class GetScreen:
     @property
     def left_top_right_bottom(self) -> tuple:
         """
-        Get the coordinates of the left, top, right, and bottom edges of the monitor's bounding rectangle.
-
-        Returns:
-            tuple: The left, top, right, and bottom coordinates.
-        """
-        return (
-            self.__monitor.left,
-            self.__monitor.top,
-            self.__monitor.right,
-            self.__monitor.bottom
-        )
-
-    @property
-    def x_y_width_height(self) -> tuple:
-        """
-        Get the coordinates and dimensions of the monitor's bounding rectangle.
-
-        Returns:
-            tuple: The left, top, width, and height of the monitor's bounding rectangle.
-        """
-        return (
-            self.__monitor.left,
-            self.__monitor.top,
-            self.__monitor.right - self.__monitor.left,
-            self.__monitor.bottom - self.__monitor.top
-        )
-
-    @property
-    def left_top_right_bottom(self) -> tuple:
-        """
         Example:
             left, top, right, bottom = GetScreen(0).left_top_right_bottom
 
