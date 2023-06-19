@@ -15,19 +15,35 @@ Please note that the device name may change if the display configuration is modi
 ## Usage
 
 ```python
+from get_screen import GetScreen, InvalidScreenNumberError
+
 screen = 1
-get_screen = GetScreen(screen)
-display_info = get_screen.display_name
-print(display_info)
 
-left, top, right, bottom = get_screen.left_top_right_bottom
-print(f"Left: {left}, Top: {top}, Right: {right}, Bottom: {bottom}")
+try:
+    screen = GetScreen(screen)
+    display_info = screen.display_name
+    print(display_info)
 
-x, y, width, height = get_screen.x_y_width_height
-print(f"X: {x}, Y: {y}, Width: {width}, Height: {height}")
+    left, top, right, bottom = screen.left_top_right_bottom
+    print(f"Left: {left}, Top: {top}, Right: {right}, Bottom: {bottom}")
 
-is_primary = get_screen.is_primary_screen
-print(f"Is Primary: {is_primary}")
+    x, y, width, height = screen.x_y_width_height
+    print(f"X: {x}, Y: {y}, Width: {width}, Height: {height}")
+
+    is_primary = screen.is_primary_screen
+    print(f"Is Primary: {is_primary}")
+
+except InvalidScreenNumberError  as e:
+    print(str(e))
+
+```
+
+```text
+$ python main.py
+DISPLAY3
+Left: 0, Top: 0, Right: 1920, Bottom: 1080
+X: 0, Y: 0, Width: 1920, Height: 1080
+Is Primary: True
 ```
 
 ### DOC
