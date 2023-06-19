@@ -15,7 +15,7 @@ Please note that the device name may change if the display configuration is modi
 ## Usage
 
 ```python
-from get_screen import GetScreen, InvalidScreenNumberError
+from screen_manager import GetScreen, InvalidScreenNumberError
 
 screen = 1
 
