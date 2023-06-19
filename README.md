@@ -30,5 +30,5 @@ is_primary = get_screen.is_primary_screen
 print(f"Is Primary: {is_primary}")
 ```
 
-
+## DOC
 https://learn.microsoft.com/en-us/windows/win32/api/_gdi/
