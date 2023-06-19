@@ -1,9 +1,9 @@
-# GetScreen
+# ScreenManager
 
-GetScreen is a Python class that retrieves information about display screens connected to a Windows system using the ctypes library. It provides methods to obtain the device name, coordinates, dimensions, and primary status of a specified screen.
+ScreenManager is a Python class that retrieves information about display screens connected to a Windows system using the ctypes library. It provides methods to obtain the device name, coordinates, dimensions, and primary status of a specified screen.
 
 ## Persistence of Screen Identification
-The GetScreen class uses the device name of the screen to consistently identify the same screen even after a system restart. This ensures that the screen with a specific device name will be recognized consistently across different system sessions.
+The ScreenManager class uses the device name of the screen to consistently identify the same screen even after a system restart. This ensures that the screen with a specific device name will be recognized consistently across different system sessions.
 
 Please note that the device name may change if the display configuration is modified (e.g., connecting or disconnecting displays).
 
