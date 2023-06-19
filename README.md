@@ -29,3 +29,6 @@ print(f"X: {x}, Y: {y}, Width: {width}, Height: {height}")
 is_primary = get_screen.is_primary_screen()
 print(f"Is Primary: {is_primary}")
 ```
+
+
+https://learn.microsoft.com/en-us/windows/win32/api/_gdi/
