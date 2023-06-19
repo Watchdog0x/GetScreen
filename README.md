@@ -33,7 +33,7 @@ try:
     is_primary = screen.is_primary_screen
     print(f"Is Primary: {is_primary}")
 
-except InvalidScreenNumberError  as e:
+except InvalidScreenNumberError as e:
     print(str(e))
 
 ```
