@@ -16,6 +16,8 @@ Please note that the device name may change if the display configuration is modi
 
 ```python
 from screen_manager import GetScreen, InvalidScreenNumberError
+import numpy as np
+import cv2
 
 screen = 1
 
@@ -32,9 +34,26 @@ try:
 
     is_primary = screen.is_primary_screen
     print(f"Is Primary: {is_primary}")
+    
+    screen.capture_screen_to_file()
+    bitmap_data = screen.capture_screen_to_data()
 
-except InvalidScreenNumberError as e:
+    # Convert the bitmap_data into a NumPy array
+    image_data = np.frombuffer(bitmap_data, dtype=np.uint8)
+
+    # Reshape the image_data array to match the dimensions of the image
+    image = image_data.reshape((height, width, 3))
+
+    # Convert the image data to the correct data type
+    cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+   
+
+
+except InvalidScreenNumberError  as e:
     print(str(e))
+
+
+
 
 ```
 
