@@ -21,6 +21,7 @@ This is a Python utility for capturing screens and managing screen information u
 import ctypes
 from ctypes import wintypes
 import threading
+from screen_manager import GetScreen, ScreenCapture
 ```
 1. The code provides two main classes: GetScreen and ScreenCapture. The GetScreen class retrieves information about display monitors, while the ScreenCapture class captures screen data.
 2. To use the GetScreen class, you can create an instance by providing the screen number:
