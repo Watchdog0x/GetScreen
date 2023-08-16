@@ -1,6 +1,6 @@
 import ctypes
 from ctypes import wintypes
-
+import threading
 
 class BITMAPFILEHEADER(ctypes.Structure):
     _pack_ = 1
@@ -64,9 +64,14 @@ class GetScreen:
             self.__monitor = monitor_info.rcMonitor
             self.__display_name = self.__get_device_name(screen)
             self.__is_primary_screen = self.__is_primary_screen(screen)
+            self.__capture_lock = threading.Lock()
+            self.__capture_data = None
         else:
             raise InvalidScreenNumberError(
                 screen, list(range(len(self.__monitor_handles))))
+    @property
+    def get_monitor(self):
+        return self.__monitor
 
     def __get_monitor_info(self, screen: int) -> MONITORINFOEX:
         monitor_info = MONITORINFOEX()
@@ -162,7 +167,7 @@ class GetScreen:
             self.__monitor.bottom - self.__monitor.top,
         )
 
-    def capture_screen_to_file(self, bmp_filename="out.bmp"):
+    def screenshot(self, bmp_filename="out.bmp"):
         width = self.__monitor.right - self.__monitor.left  # Get the width of the screen
         height = self.__monitor.bottom - self.__monitor.top  # Get the height of the screen
 
@@ -213,41 +218,55 @@ class GetScreen:
         ctypes.windll.gdi32.DeleteDC(mem_dc)
         ctypes.windll.user32.ReleaseDC(0, screen_dc)
 
-    def capture_screen_to_data(self):
-        width = self.__monitor.right - self.__monitor.left  # Get the width of the screen
-        height = self.__monitor.bottom - self.__monitor.top  # Get the height of the screen
+class ScreenCapture:
+    def __init__(self, monitor):
+        self.__monitor = monitor
+        self.__capture_data = None
+        self.__capture_lock = threading.Lock()
+        self.__data_available = threading.Event()
+        self.__capture_thread = threading.Thread(target=self.__capture_screen_data)
+        self.__capture_thread.daemon = True
+        self.__capture_thread.start()
 
-        screen_dc = ctypes.windll.user32.GetDC(0)
-        mem_dc = ctypes.windll.gdi32.CreateCompatibleDC(screen_dc)
-        bitmap = ctypes.windll.gdi32.CreateCompatibleBitmap(
-            screen_dc, width, height)
-        old_bitmap = ctypes.windll.gdi32.SelectObject(mem_dc, bitmap)
-        SRCCOPY = 0x00CC0020
-        ctypes.windll.gdi32.BitBlt(mem_dc, 0, 0, width, height, screen_dc, self.__monitor.left,
-                                   self.__monitor.top, SRCCOPY)
+    def __capture_screen_data(self):
+        while True:
+            width = self.__monitor.right - self.__monitor.left
+            height = self.__monitor.bottom - self.__monitor.top
 
-        bitmap_info = BITMAPINFOHEADER()
-        bitmap_info.biSize = ctypes.sizeof(BITMAPINFOHEADER)
-        bitmap_info.biWidth = width
-        bitmap_info.biHeight = -height
-        bitmap_info.biPlanes = 1
-        bitmap_info.biBitCount = 24
-        bitmap_info.biCompression = 0
-        bitmap_info.biSizeImage = 0
-        bitmap_info.biXPelsPerMeter = 0
-        bitmap_info.biYPelsPerMeter = 0
-        bitmap_info.biClrUsed = 0
-        bitmap_info.biClrImportant = 0
+            screen_dc = ctypes.windll.user32.GetDC(0)
+            mem_dc = ctypes.windll.gdi32.CreateCompatibleDC(screen_dc)
+            bitmap = ctypes.windll.gdi32.CreateCompatibleBitmap(screen_dc, width, height)
+            old_bitmap = ctypes.windll.gdi32.SelectObject(mem_dc, bitmap)
+            SRCCOPY = 0x00CC0020
+            ctypes.windll.gdi32.BitBlt(mem_dc, 0, 0, width, height, screen_dc, self.__monitor.left,
+                                        self.__monitor.top, SRCCOPY)
 
-        bitmap_data = ctypes.create_string_buffer(width * height * 3)
-        ctypes.windll.gdi32.GetDIBits(
-            mem_dc, bitmap, 0, height, bitmap_data, ctypes.byref(
-                bitmap_info), 0
-        )
+            bitmap_info = BITMAPINFOHEADER()
+            bitmap_info.biSize = ctypes.sizeof(BITMAPINFOHEADER)
+            bitmap_info.biWidth = width
+            bitmap_info.biHeight = -height
+            bitmap_info.biPlanes = 1
+            bitmap_info.biBitCount = 24
+            bitmap_info.biCompression = 0
+            bitmap_info.biSizeImage = 0
+            bitmap_info.biXPelsPerMeter = 0
+            bitmap_info.biYPelsPerMeter = 0
+            bitmap_info.biClrUsed = 0
+            bitmap_info.biClrImportant = 0
 
-        ctypes.windll.gdi32.SelectObject(mem_dc, old_bitmap)
-        ctypes.windll.gdi32.DeleteObject(bitmap)
-        ctypes.windll.gdi32.DeleteDC(mem_dc)
-        ctypes.windll.user32.ReleaseDC(0, screen_dc)
+            bitmap_data = ctypes.create_string_buffer(width * height * 3)
+            ctypes.windll.gdi32.GetDIBits(mem_dc, bitmap, 0, height, bitmap_data, ctypes.byref(bitmap_info), 0)
 
-        return bitmap_data
+            ctypes.windll.gdi32.SelectObject(mem_dc, old_bitmap)
+            ctypes.windll.gdi32.DeleteObject(bitmap)
+            ctypes.windll.gdi32.DeleteDC(mem_dc)
+            ctypes.windll.user32.ReleaseDC(0, screen_dc)
+
+            with self.__capture_lock:
+                self.__capture_data = bitmap_data
+                self.__data_available.set()
+    
+    def get_captured_data(self):
+        self.__data_available.wait()
+        with self.__capture_lock:
+            return self.__capture_data
