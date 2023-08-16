@@ -1,69 +1,47 @@
-# ScreenManager
+# Screen Capture Utility in Python
 
-ScreenManager is a Python class that retrieves information about display screens connected to a Windows system using the ctypes library. It provides methods to obtain the device name, coordinates, dimensions, and primary status of a specified screen.
+This is a Python utility for capturing screens and managing screen information using the Windows API. The utility provides a way to capture screen data and handle screen information in a multi-screen setup.
 
-## Persistence of Screen Identification
-The ScreenManager class uses the device name of the screen to consistently identify the same screen even after a system restart. This ensures that the screen with a specific device name will be recognized consistently across different system sessions.
+## Features
 
-Please note that the device name may change if the display configuration is modified (e.g., connecting or disconnecting displays).
+- Capture screen data and save it as a BMP image.
+- Retrieve information about the display monitors, such as monitor dimensions and positions.
+- Identify primary screens.
+- Handle multiple screens.
 
-## Prerequisites
+## How to Use
 
-- Python 3.x
-- Windows operating system
+1. Ensure you have Python installed on your system.
 
-## Usage
+2. Clone this repository or copy the provided code.
+
+3. Import the necessary modules in your Python script or interactive session.
 
 ```python
-from screen_manager import GetScreen, InvalidScreenNumberError
-import numpy as np
-import cv2
+import ctypes
+from ctypes import wintypes
+import threading
+```
+1. The code provides two main classes: GetScreen and ScreenCapture. The GetScreen class retrieves information about display monitors, while the ScreenCapture class captures screen data.
+2. To use the GetScreen class, you can create an instance by providing the screen number:
+```python
+screen_number = 0  # Change this to the desired screen number
+screen = GetScreen(screen_number)
+print("Display Name:", screen.display_name)
+print("Primary Screen:", screen.is_primary_screen)
+```
+1. To capture screen data using the ScreenCapture class, create an instance and start capturing:
+```python
+screen_to_capture = GetScreen(0)  # Change this to the desired screen number
+capture = ScreenCapture(screen_to_capture)
 
-screen = 1
-
-try:
-    screen = GetScreen(screen)
-    display_info = screen.display_name
-    print(display_info)
-
-    left, top, right, bottom = screen.left_top_right_bottom
-    print(f"Left: {left}, Top: {top}, Right: {right}, Bottom: {bottom}")
-
-    x, y, width, height = screen.x_y_width_height
-    print(f"X: {x}, Y: {y}, Width: {width}, Height: {height}")
-
-    is_primary = screen.is_primary_screen
-    print(f"Is Primary: {is_primary}")
-    
-    screen.capture_screen_to_file()
-    bitmap_data = screen.capture_screen_to_data()
-
-    # Convert the bitmap_data into a NumPy array
-    image_data = np.frombuffer(bitmap_data, dtype=np.uint8)
-
-    # Reshape the image_data array to match the dimensions of the image
-    image = image_data.reshape((height, width, 3))
-
-    # Convert the image data to the correct data type
-    cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-   
-
-
-except InvalidScreenNumberError  as e:
-    print(str(e))
-
-
-
-
+# Wait for data to be captured
+captured_data = capture.get_captured_data()
 ```
 
-```text
-$ python main.py
-DISPLAY3
-Left: 0, Top: 0, Right: 1920, Bottom: 1080
-X: 0, Y: 0, Width: 1920, Height: 1080
-Is Primary: True
-```
+## Note 
+- This utility is specific to Windows and uses the Windows API to interact with display monitors and capture screen data.
+- The code focuses on the functionality of capturing screen data and managing screen information. It does not provide error handling for all possible scenarios.
 
-### DOC
-https://learn.microsoft.com/en-us/windows/win32/api/_gdi/
+## License
+This code is provided under the MIT License.
