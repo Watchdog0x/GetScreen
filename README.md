@@ -37,6 +37,8 @@ capture = ScreenCapture(screen_to_capture)
 captured_data = capture.get_captured_data()
 ```
 
+all the [Examples](https://github.com/Watchdog0x/ScreenManager/wiki/Examples)
+
 ## Note 
 - This utility is specific to Windows and uses the Windows API to interact with display monitors and capture screen data.
 - The code focuses on the functionality of capturing screen data and managing screen information. It does not provide error handling for all possible scenarios.
