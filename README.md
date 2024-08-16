@@ -1,3 +1,46 @@
+
+# ScreenManager (Archived)
+
+**⚠️ This repository has been archived and is no longer maintained. ⚠️**
+
+## Why is this archived?
+
+We have found a superior alternative for screen capture and management: [BetterCam](https://github.com/RootKit-Org/BetterCam).
+
+## Recommendation
+
+We strongly recommend using BetterCam for your screen capture needs. It offers:
+
+- Significantly faster performance
+- NVIDIA GPU acceleration support for extremely efficient screen capture
+
+## How to switch to BetterCam
+
+1. Visit the [BetterCam GitHub repository](https://github.com/RootKit-Org/BetterCam)
+2. Follow their installation instructions:
+   ```
+   pip install bettercam
+   ```
+3. Update your code to use BetterCam. Here's a basic example:
+   ```python
+   import bettercam
+
+   # Capture the entire screen
+   image = bettercam.capture()
+
+   # Save the captured image
+   image.save("screenshot.png")
+   ```
+
+4. Refer to BetterCam's documentation for more advanced usage and features.
+
+## Thank you
+
+We appreciate your interest in ScreenManager. By archiving this repository, we aim to direct users to the best available tools for screen capture and management.
+
+If you have any questions about this archival or need assistance migrating to BetterCam, please open an issue in the BetterCam repository.
+
+
 # Screen Capture Utility in Python
 
 This is a Python utility for capturing screens and managing screen information using the Windows API. The utility provides a way to capture screen data and handle screen information in a multi-screen setup.
